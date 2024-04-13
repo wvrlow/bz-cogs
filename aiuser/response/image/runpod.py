@@ -41,6 +41,7 @@ class RunPodGenerator(ImageGenerator):
                         "sd_vae": "vae-ft-mse-840000-ema-pruned.safetensors"
                     },
                     **parameters
+                }
             }
         }
 
