@@ -25,6 +25,7 @@ class Functions(MixinMeta):
                              payload: dict = None,
                              prompt: str = "",
                              negative_prompt: str = None,
+                             style: str = None,
                              width: int = None,
                              height: int = None,
                              cfg: int = None,
@@ -56,8 +57,9 @@ class Functions(MixinMeta):
 
         payload = payload or {
             "prompt": prompt + " " + lora,
-            "cfg_scale": cfg or await self.config.guild(guild).cfg(),
             "negative_prompt": negative_prompt or await self.config.guild(guild).negative_prompt(),
+            "styles": style.split(", ") if style else [],
+            "cfg_scale": cfg or await self.config.guild(guild).cfg(),
             "steps": steps or await self.config.guild(guild).sampling_steps(),
             "seed": seed,
             "subseed": subseed,
@@ -120,6 +122,7 @@ class Functions(MixinMeta):
                                payload: dict = None,
                                prompt: str = "",
                                negative_prompt: str = None,
+                               style: str = None,
                                width: int = None,
                                height: int = None,
                                cfg: int = None,
@@ -150,8 +153,9 @@ class Functions(MixinMeta):
 
         payload = payload or {
             "prompt": prompt + " " + lora,
-            "cfg_scale": cfg or await self.config.guild(guild).cfg(),
             "negative_prompt": negative_prompt or await self.config.guild(guild).negative_prompt(),
+            "styles": style.split(", ") if style else [],
+            "cfg_scale": cfg or await self.config.guild(guild).cfg(),
             "steps": steps or await self.config.guild(guild).sampling_steps(),
             "seed": seed,
             "subseed": subseed,
@@ -237,9 +241,7 @@ class Functions(MixinMeta):
 
     @retry(wait=wait_random(min=2, max=3), stop=stop_after_attempt(2), reraise=True)
     async def _post_sd_endpoint(self, endpoint, payload, auth_str):
-        async with self.session.post(url=endpoint, json=payload, auth=get_auth(auth_str)) as response:
-            if response.status != 200:
-                response.raise_for_status()
+        async with self.session.post(url=endpoint, json=payload, auth=get_auth(auth_str), raise_for_status=True) as response:
             r = await response.json()
             image_data = base64.b64decode(r["images"][0])
 
