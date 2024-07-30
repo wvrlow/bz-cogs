@@ -93,7 +93,7 @@ class AIUser(
             "random_messages_prompts": DEFAULT_RANDOM_PROMPTS,
             "presets": json.dumps(DEFAULT_PRESETS),
             "image_requests": False,
-            "image_requests_endpoint": None,
+            "image_requests_endpoint": "dall-e-2",
             "image_requests_parameters": None,
             "image_requests_preprompt": "",
             "image_requests_subject": "woman",
@@ -196,7 +196,7 @@ class AIUser(
             )
 
         try:
-            await self.send_response(ctx)
+            await self.create_response(ctx)
         except Exception:
             await ctx.send(":warning: Error in generating response!", ephemeral=True)
 
@@ -225,7 +225,7 @@ class AIUser(
         if URL_PATTERN.search(ctx.message.content):
             ctx = await self.wait_for_embed(ctx)
 
-        await self.send_response(ctx)
+        await self.create_response(ctx)
 
     async def wait_for_embed(self, ctx: commands.Context):
         """Wait for possible embed to be valid"""
